@@ -67,26 +67,63 @@ function init_map () {
 function tegn_monster () {
     if (-2 <= monster_x - pos_x && monster_x - pos_x <= 2) {
         if (-2 <= monster_y - pos_y && monster_y - pos_y <= 2) {
-            let monster_leds: number[] = []
-            music.startMelody(music.builtInMelody(Melodies.Dadadadum), MelodyOptions.Once)
-            led.plotBrightness(0, 0, monster_leds[monster_led_index])
+            led.plotBrightness(monster_x - pos_x + 2, monster_y - pos_y + 2, monster_leds[monster_led_index])
             monster_led_index = (monster_led_index + 1) % 8
+            music.playSoundEffect(music.createSoundEffect(
+            WaveShape.Noise,
+            5000,
+            100,
+            255,
+            213,
+            100,
+            SoundExpressionEffect.None,
+            InterpolationCurve.Linear
+            ), SoundExpressionPlayMode.InBackground)
         }
     }
 }
+function completed2 () {
+    for (let xx = 0; xx <= 4; xx++) {
+        for (let yy = 0; yy <= 4; yy++) {
+            led.plot(xx, yy)
+            basic.pause(100)
+        }
+    }
+    basic.pause(1000)
+    basic.showLeds(`
+        # # . # #
+        . . . . .
+        . . . . .
+        . # # # .
+        # . . . #
+        `)
+    basic.pause(2000)
+    for (let xx = 0; xx <= 4; xx++) {
+        for (let yy = 0; yy <= 4; yy++) {
+            led.plot(xx, yy)
+            basic.pause(50)
+        }
+    }
+    basic.pause(1000)
+}
 function restart () {
+    is_playing = true
     pos_y = max_y
     pos_x = row_size
     monster_x = 1
-    monster_y = 8
+    monster_y = 7
     monster_led_index = 0
     tegn()
 }
 input.onGesture(Gesture.LogoUp, function () {
-    go_down()
+    if (is_playing) {
+        go_down()
+    }
 })
 input.onGesture(Gesture.TiltLeft, function () {
-    go_left()
+    if (is_playing) {
+        go_left()
+    }
 })
 function draw (skærmx: number, skærmy: number) {
     if (map(skærmx, skærmy) < 2) {
@@ -177,6 +214,7 @@ function tegn () {
     } else {
         hide(4, 4)
     }
+    tegn_monster()
 }
 function hide (skærmx: number, skærmy: number) {
     led.plotBrightness(skærmx, skærmy, unknowncolor)
@@ -249,20 +287,23 @@ function go_up () {
             pos_y = pos_y - 1
         }
         tegn()
-    }
-}
-function go_down () {
-    if (pos_y != 0) {
-        if (pos_y < max_y) {
-            if (map(2, 3) == 0) {
-                pos_y = pos_y + 1
-            }
-            tegn()
+        if (pos_y == 0) {
+            is_playing = false
         }
     }
 }
+function go_down () {
+    if (pos_y < max_y) {
+        if (map(2, 3) == 0) {
+            pos_y = pos_y + 1
+        }
+        tegn()
+    }
+}
 input.onGesture(Gesture.TiltRight, function () {
-    go_right()
+    if (is_playing) {
+        go_right()
+    }
 })
 function add_row (row: number[]) {
     for (let value of row) {
@@ -270,15 +311,19 @@ function add_row (row: number[]) {
     }
 }
 input.onGesture(Gesture.LogoDown, function () {
-    go_up()
+    if (is_playing) {
+        go_up()
+    }
 })
 let y = 0
 let x = 0
+let is_playing = false
 let monster_led_index = 0
 let monster_y = 0
 let pos_x = 0
 let monster_x = 0
 let mapdata: number[] = []
+let monster_leds: number[] = []
 let outsidecolor = 0
 let unknowncolor = 0
 let wallcolor = 0
@@ -293,6 +338,16 @@ pos_y = max_y
 wallcolor = 150
 unknowncolor = 25
 outsidecolor = 5
+monster_leds = [
+255,
+223,
+127,
+32,
+0,
+32,
+127,
+223
+]
 init_map()
 restart()
 basic.forever(function () {
