@@ -69,17 +69,22 @@ function restart () {
     tegn()
 }
 function init_level_2 () {
-    add_row("11111411111")
-    add_row("10001000001")
-    add_row("10111111101")
-    add_row("10101010101")
-    add_row("11101110101")
-    add_row("10000000101")
-    add_row("10111011101")
-    add_row("15100000001")
-    add_row("10111010111")
-    add_row("10000010001")
-    add_row("11111311111")
+    add_row("111111111111111111111")
+    add_row("100000000000000100001")
+    add_row("101110111110111101101")
+    add_row("101000100000100100101")
+    add_row("101100101111110001101")
+    add_row("100001111000000100101")
+    add_row("111100000011111111101")
+    add_row("100111111000000000101")
+    add_row("110100001111111110101")
+    add_row("100101111000100010101")
+    add_row("101100001010001000101")
+    add_row("100011100011111111101")
+    add_row("101000001000000050004")
+    add_row("101011101111111111111")
+    add_row("100000100000000000001")
+    add_row("111113111111111111111")
 }
 function can_move_to (xx: number, yy: number) {
     return lookup(xx, yy) != 1 && lookup(xx, yy) != 2
@@ -94,6 +99,19 @@ input.onGesture(Gesture.TiltLeft, function () {
         go_left()
     }
 })
+function init_level_3 () {
+    add_row("11111411111")
+    add_row("10001000001")
+    add_row("10111111101")
+    add_row("10101010101")
+    add_row("11101110101")
+    add_row("10000000101")
+    add_row("10111011101")
+    add_row("15100000001")
+    add_row("10111010111")
+    add_row("10000010001")
+    add_row("11111311111")
+}
 function draw (screen_x: number, screen_y: number) {
     if (map(screen_x, screen_y) < 2) {
         if (map(screen_x, screen_y) == 0) {
@@ -200,6 +218,9 @@ function init_level () {
     }
     if (level == 2) {
         init_level_2()
+    }
+    if (level == 3) {
+        init_level_3()
     }
     time = 0
     pos_x = start_x
@@ -348,10 +369,11 @@ basic.forever(function () {
             }
             can_move = false
             if (!(dead)) {
-                if (level < 2) {
+                if (level < 3) {
                     level_completed()
                     level += 1
                     init_level()
+                    tegn()
                 } else {
                     is_playing = false
                 }
